@@ -19,20 +19,23 @@ private:
 
     QLabel *lab_volume = nullptr;
     QLabel *lab_speed= nullptr;
-    //QLabel *lab_engine = nullptr;
     QLabel *lab_language = nullptr;
-   // QLabel *lab_voice_name = nullptr;
+    QLabel *lab_pitch = nullptr;
+
     QSlider *sl_volume = nullptr;
     QSlider *sl_speed = nullptr;
+    QSlider *sl_pitch = nullptr;
+
     QPushButton *but_play = nullptr;
     QPushButton *but_pause = nullptr;
     QPushButton *but_resume = nullptr;
     QPushButton *but_stop = nullptr;
+
     QComboBox *box_language = nullptr;
+
     QTextBrowser *text_browser = nullptr;
 
     QTextToSpeech *speech = nullptr;
-    QVector<QVoice> voices;
 
 public:
     VOICE_ACTING(QWidget *parent = nullptr);
@@ -43,11 +46,11 @@ public slots:
     void Pause();
     void Resume();
 
-    void SetSpeed(int);
+    void SetSpeed(int speed);
     void SetVolume(int volume);
+    void SetPitch(double pitch);
 
     void SetLanguage(int language);
-    void SetVoice(int index);
 
     void LocaleChanged(const QLocale &locale);
 };

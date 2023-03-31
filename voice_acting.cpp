@@ -57,6 +57,13 @@ VOICE_ACTING::VOICE_ACTING(QWidget *parent): QWidget(parent){
     h_speed_l->addWidget(lab_speed);
     h_speed_l->addWidget(sl_speed);
 
+    QHBoxLayout *h_pitch_l = new QHBoxLayout;
+    v_main_l->addLayout(h_pitch_l);
+    lab_pitch = new QLabel("Тональность");
+    sl_pitch = new QSlider(Qt::Horizontal);
+    h_pitch_l->addWidget(lab_pitch);
+    h_pitch_l->addWidget(sl_pitch);
+
     QHBoxLayout *h_language_l = new QHBoxLayout;
     v_main_l->addLayout(h_language_l);
     lab_language = new QLabel("Язык");
@@ -79,6 +86,8 @@ VOICE_ACTING::VOICE_ACTING(QWidget *parent): QWidget(parent){
     connect(but_play, &QPushButton::clicked, this, &VOICE_ACTING::Speak);
     connect(sl_speed, &QSlider::valueChanged, this, &VOICE_ACTING::SetSpeed);
     connect(sl_volume, &QSlider::valueChanged, this, &VOICE_ACTING::SetVolume);
+    connect(sl_pitch, &QSlider::valueChanged, this, &VOICE_ACTING::SetPitch);
+
 
     speech = new QTextToSpeech(this);
 
@@ -88,7 +97,7 @@ VOICE_ACTING::VOICE_ACTING(QWidget *parent): QWidget(parent){
     connect(but_pause, &QPushButton::clicked,this, &VOICE_ACTING::Pause);
     connect(but_resume, &QPushButton::clicked, this, &VOICE_ACTING::Resume);
 
-   // connect(speech, &QTextToSpeech::stateChanged, this, &VOICE_ACTING::LocaleChanged);
+
     connect(speech, &QTextToSpeech::localeChanged, this, &VOICE_ACTING::LocaleChanged);
 
     connect(box_language, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &VOICE_ACTING::SetLanguage);
@@ -96,9 +105,7 @@ VOICE_ACTING::VOICE_ACTING(QWidget *parent): QWidget(parent){
     const QVector<QLocale> locales = speech->availableLocales();
     QLocale current = speech->locale();
     for (const QLocale &locale : locales) {
-        QString name(QString("%1 (%2)")
-                     .arg(QLocale::languageToString(locale.language()))
-                     .arg(QLocale::countryToString(locale.country())));
+        QString name(QString("%1 (%2)").arg(QLocale::languageToString(locale.language())).arg(QLocale::countryToString(locale.country())));
         QVariant localeVariant(locale);
         box_language->addItem(name, localeVariant);
         if (locale.name() == current.name())
@@ -131,30 +138,18 @@ void VOICE_ACTING::SetVolume(int volume){
     speech->setVolume(volume / 100.0);
 }
 
+void VOICE_ACTING::SetPitch(double pitch){
+    speech->setPitch(pitch / 10.0);
+}
+
 void VOICE_ACTING::SetLanguage(int language){
     QLocale locale = box_language->itemData(language).toLocale();
     speech->setLocale(locale);
 }
 
-void VOICE_ACTING::SetVoice(int index){
-    speech->setVoice(voices.at(index));
-}
-
 void VOICE_ACTING::LocaleChanged(const QLocale &locale){
     QVariant localeVariant(locale);
     box_language->setCurrentIndex(box_language->findData(localeVariant));
-
-
-//    voices = speech->availableVoices();
-//    QVoice currentVoice = speech->voice();
-//    for (const QVoice &voice : qAsConst(voices)) {
-//        voice->addItem(QString("%1 - %2 - %3").arg(voice.name())
-//                          .arg(QVoice::genderName(voice.gender()))
-//                          .arg(QVoice::ageName(voice.age())));
-//        if (voice.name() == currentVoice.name())
-//            ui.voice->setCurrentIndex(ui.voice->count() - 1);
-//    }
-//    connect(ui.voice, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &MainWindow::voiceSelected);
 }
 
 
